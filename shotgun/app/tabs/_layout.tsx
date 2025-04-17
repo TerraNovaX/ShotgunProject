@@ -13,7 +13,7 @@ export default function Layout() {
         headerLeft: () => (
           <TouchableOpacity
             style={{ marginLeft: 15 }}
-            onPress={() => router.push('/tabs/profile')}
+            onPress={() => router.push('/profile')}
           >
             <Ionicons name="person-circle-outline" size={28} />
           </TouchableOpacity>
@@ -39,10 +39,10 @@ export default function Layout() {
         },
       })}
     >
-      <Tabs.Screen name="home" />
-      <Tabs.Screen name="maps" />
-      <Tabs.Screen name="search" />
-      <Tabs.Screen name="myEvents" />
+      <Tabs.Screen name="Home" />
+      <Tabs.Screen name="Maps" />
+      <Tabs.Screen name="Search" />
+      <Tabs.Screen name="My Events" />
     </Tabs>
   );
 }
