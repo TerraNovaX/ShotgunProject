@@ -1,15 +1,20 @@
-import { Text, View } from "react-native";
+import { useEffect } from 'react';
+import { useRouter, useRootNavigationState } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
 
 export default function Index() {
+  const router = useRouter();
+  const rootNavigationState = useRootNavigationState();
+
+  useEffect(() => {
+    if (rootNavigationState?.key) {
+      router.replace('/login');
+    }
+  }, [rootNavigationState]);
+
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size="large" />
     </View>
   );
 }
