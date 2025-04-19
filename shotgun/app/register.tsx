@@ -1,14 +1,35 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function Register() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleRegister = () => {
-    router.replace('/tabs/home');
+  const handleRegister = async () => {
+    setLoading(true);
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      Alert.alert("Erreur", error.message);
+    } else {
+      Alert.alert("Succès", "Utilisateur créé, vérifie ton email !");
+    }
+    setLoading(false);
   };
 
   return (
@@ -33,7 +54,7 @@ export default function Register() {
         <Text style={styles.buttonText}>S’inscrire</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push('/login')}>
+      <TouchableOpacity onPress={() => router.push("/login")}>
         <Text style={styles.linkText}>Déjà un compte ? Se connecter</Text>
       </TouchableOpacity>
     </View>
@@ -41,30 +62,40 @@ export default function Register() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#fff' },
-  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 30, textAlign: 'center' },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 24,
+    backgroundColor: "#fff",
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 30,
+    textAlign: "center",
+  },
   input: {
-    backgroundColor: '#f2f2f2',
+    backgroundColor: "#f2f2f2",
     borderRadius: 10,
     padding: 14,
     marginBottom: 16,
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#16a34a',
+    backgroundColor: "#16a34a",
     paddingVertical: 14,
     borderRadius: 10,
     marginBottom: 12,
   },
   buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: 'bold',
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
     fontSize: 16,
   },
   linkText: {
-    color: '#16a34a',
-    textAlign: 'center',
+    color: "#16a34a",
+    textAlign: "center",
     marginTop: 10,
     fontSize: 14,
   },
