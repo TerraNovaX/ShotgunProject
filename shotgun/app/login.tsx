@@ -1,14 +1,36 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = () => {
-    router.replace('/tabs/home');
+  const handleLogin = async () => {
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      Alert.alert("Erreur", error.message);
+    } else {
+      router.replace("/tabs/home");
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -33,7 +55,7 @@ export default function Login() {
         <Text style={styles.buttonText}>Se connecter</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push('/register')}>
+      <TouchableOpacity onPress={() => router.push("/register")}>
         <Text style={styles.linkText}>Créer un compte</Text>
       </TouchableOpacity>
     </View>
@@ -41,30 +63,40 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#fff' },
-  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 30, textAlign: 'center' },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 24,
+    backgroundColor: "#fff",
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 30,
+    textAlign: "center",
+  },
   input: {
-    backgroundColor: '#f2f2f2',
+    backgroundColor: "#f2f2f2",
     borderRadius: 10,
     padding: 14,
     marginBottom: 16,
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#1e40af',
+    backgroundColor: "#1e40af",
     paddingVertical: 14,
     borderRadius: 10,
     marginBottom: 12,
   },
   buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: 'bold',
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
     fontSize: 16,
   },
   linkText: {
-    color: '#1e40af',
-    textAlign: 'center',
+    color: "#1e40af",
+    textAlign: "center",
     marginTop: 10,
     fontSize: 14,
   },
