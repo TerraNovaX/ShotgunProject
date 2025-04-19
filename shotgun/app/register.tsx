@@ -13,6 +13,7 @@ import { supabase } from "@/lib/supabase";
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -26,9 +27,34 @@ export default function Register() {
 
     if (error) {
       Alert.alert("Erreur", error.message);
-    } else {
-      Alert.alert("Succès", "Utilisateur créé, vérifie ton email !");
+      setLoading(false);
+      return;
     }
+
+    const user = data.user;
+
+    if (user) {
+      const { error: insertError } = await supabase.from("profiles").insert([
+        {
+          id: user.id,
+          name: name,
+        },
+      ]);
+
+      if (insertError) {
+        Alert.alert("Erreur lors de l’ajout du profil", insertError.message);
+        setLoading(false);
+        return;
+      }
+
+      Alert.alert("Succès", "Compte créé avec succès !", [
+        {
+          text: "OK",
+          onPress: () => router.replace("/login"),
+        },
+      ]);
+    }
+
     setLoading(false);
   };
 
@@ -50,8 +76,16 @@ export default function Register() {
         secureTextEntry
         onChangeText={setPassword}
       />
+      <TextInput
+        style={styles.input}
+        placeholder="Nom"
+        placeholderTextColor="#999"
+        onChangeText={setName}
+      />
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>S’inscrire</Text>
+        <Text style={styles.buttonText}>
+          {loading ? "Chargement..." : "S’inscrire"}
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push("/login")}>
