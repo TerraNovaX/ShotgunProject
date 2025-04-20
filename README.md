@@ -9,12 +9,21 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    ```bash
    npm install
    ```
+2. .env
+   cree un .env à la racine du projet et renseigné c'est deux champ ( la sécurité n'est pas bonne mais je n'ai pas d'Api backend pour stocker les clés ) 
+   EXPO_PUBLIC_SUPABASE_URL="https://thtiqavkmsgftlztikre.supabase.co"
+EXPO_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRodGlxYXZrbXNnZnRsenRpa3JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUwMDc5MDMsImV4cCI6MjA2MDU4MzkwM30.nLQCC5JGyUI6Yb2v1HNwaqqPCULJx9iXE-vRHkHdbA4"
 
-2. Start the app
+   
+4. Start the app
 
    ```bash
     npx expo start
-   ```
+
+5. Voici un apercu de notre base de données 
+   
+   ```<img width="1440" alt="Capture d’écran 2025-04-20 à 21 35 27" src="https://github.com/user-attachments/assets/1c019e43-f9c1-49dd-bb2c-329472232e47" />
+
 
 In the output, you'll find options to open the app in a
 
