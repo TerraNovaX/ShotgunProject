@@ -44,16 +44,114 @@ npm run reset-project
 
 This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
+# 📱 Eventme
 
-To learn more about developing your project with Expo, look at the following resources:
+**Eventme** est une application mobile développée avec **Expo Router** et **Supabase**, qui permet d'explorer, filtrer et participer à des événements en Île-de-France.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## 🧭 Navigation
 
-Join our community of developers creating universal apps.
+L'application est organisée autour de cinq onglets principaux :
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- 🏠 **Home**
+- 🗺️ **Maps**
+- 🔍 **Recherche**
+- 📅 **Mes événements**
+- 👤 **Profil**
+
+---
+
+## 🧩 Fonctionnalités par page
+
+### 🏠 Home
+
+> Affichage des événements par date, avec filtres
+
+- Regroupe les événements par date : **Aujourd’hui**, **Demain**, ou date explicite.
+- Filtres disponibles :
+  - Ville
+  - Date (avec calendrier)
+  - Catégorie (ex : musique, sport...)
+  - Événements **gratuits** ou **premium**
+- Bouton "Voir tous les événements"
+- Navigation vers la page de détails d’un événement
+
+---
+
+### 🗺️ Maps
+
+> Géolocalisation et exploration visuelle
+
+- Accès à la **position actuelle** de l’utilisateur
+- Affichage des événements **à proximité** sur une carte (OpenStreetMap)
+- Chaque événement est cliquable pour accéder à sa page de détails
+
+---
+
+### 🔍 Recherche
+
+> Recherche textuelle dans les événements
+
+- Champ de recherche par **titre d'événement**
+- Résultats mis à jour en temps réel
+- Navigation vers la page de l’événement
+
+---
+
+### 📅 My Events
+
+> Suivi des événements auxquels on participe
+
+- Affiche les événements que l’utilisateur a **rejoints**
+- Affichage sous forme de liste avec date et lieu
+- Tri chronologique automatique
+
+---
+
+### 👤 Profil
+
+> Informations utilisateur + progression
+
+- Affiche :
+  - **Email**
+  - **Nom**
+  - Nombre d'événements rejoints
+  - **Score** en "diamants" 🟣 :
+    - +5 par participation
+    - +15 par partage
+    - +20 par ajout d’ami
+- Affiche un badge ou une info spéciale quand le score atteint **100 diamants** : accès aux **événements premium**
+
+---
+
+### 📄 Page d’un événement (`/event/[id]`)
+
+> Détail complet d’un événement
+
+- Titre de l’événement
+- Lieu (nom et ville)
+- Date et heure
+- Description
+- Boutons :
+  - **Partager** (simule un partage et augmente les points)
+  - **Je participe** (ajoute à "Mes événements" et augmente les points)
+- Si l'événement est premium et que l’utilisateur n’a pas assez de points :
+  - Un message est affiché et la participation est bloquée
+
+---
+
+## 🚀 Stack technique
+
+- **React Native + Expo Router**
+- **Supabase** (authentification + base de données)
+- **OpenStreetMap** (cartographie sans clé API)
+- **TypeScript**
+
+---
+
+## 📌 Les plus
+
+- Notifications push
+- Rappels
+
