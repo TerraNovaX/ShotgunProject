@@ -5,7 +5,6 @@ import Modal from 'react-native-modal';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { allEvents, allUsers, eventParticipants } from '@/lib/data';
-import { checkNotifications } from '@/lib/notif';
 import { format, isToday, isTomorrow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 
@@ -52,9 +51,6 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    checkNotifications(currentTime, allUsers, allEvents, eventParticipants);
-  }, [currentTime]);
 
   const handleConfirmDate = (date: Date) => {
     setSelectedDate(date);
@@ -173,9 +169,6 @@ export default function Home() {
         <Button title="Voir tous les événements" onPress={() => router.push('/allEvents')} />
       </View>
 
-      <View>
-        <Button title="Vérifier les notifications" onPress={() => checkNotifications(currentTime, allUsers, allEvents, eventParticipants)} />
-      </View>
     </View>
   );
 }
