@@ -32,6 +32,10 @@ export default function MyEvents() {
     fetchUserAndEvents();
   }, []);
 
+  const today = new Date();
+  const upcomingEvents = events.filter((event) => new Date(event.date) >= today);
+  const pastEvents = events.filter((event) => new Date(event.date) < today);
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -50,32 +54,59 @@ export default function MyEvents() {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={events}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.eventCard}>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.info}>
-              Date: {new Date(item.date).toLocaleDateString()}
-            </Text>
-            <Text style={styles.info}>Lieu: {item.location.city}</Text>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                cancelParticipation(item.id, item.title, setEvents);
-              }}>
-              <Text style={styles.buttonText}>Annuler ma participation</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
+      {upcomingEvents.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Événements à venir</Text>
+          <FlatList
+            data={upcomingEvents}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.eventCard}>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.info}>
+                  Date: {new Date(item.date).toLocaleDateString()}
+                </Text>
+                <Text style={styles.info}>Lieu: {item.location.city}</Text>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => {
+                    cancelParticipation(item.id, item.title, setEvents);
+                  }}>
+                  <Text style={styles.buttonText}>Annuler ma participation</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+        </View>
+      )}
+
+      {pastEvents.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Événements passés</Text>
+          <FlatList
+            data={pastEvents}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.eventCard}>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.info}>
+                  Date: {new Date(item.date).toLocaleDateString()}
+                </Text>
+                <Text style={styles.info}>Lieu: {item.location.city}</Text>
+                <Text style={styles.info}>Événement passé</Text>
+              </View>
+            )}
+          />
+        </View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { display: "flex", flexDirection: "column", padding: 20 },
+  section: { marginBottom: 30 },
+  sectionTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 10 },
   eventCard: {
     marginBottom: 15,
     padding: 15,
