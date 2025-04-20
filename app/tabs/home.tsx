@@ -9,6 +9,7 @@ import { fr } from 'date-fns/locale/fr';
 import { supabase } from '@/lib/supabase';
 
 
+
 const cities = ['Paris', 'Marseille', 'Lyon', 'Versailles', 'Toulouse', 'Nice', 'Bordeaux', 'Lille', 'Strasbourg', 'Nantes'];
 
 export default function Home() {
@@ -18,13 +19,16 @@ export default function Home() {
   const [allEvents, setAllEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-
   const [isCityModalVisible, setCityModalVisible] = useState(false);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const [filteredEvents, setFilteredEvents] = useState(allEvents);
+  const [isFilterModalVisible, setFilterModalVisible] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [isFreeOnly, setIsFreeOnly] = useState<boolean>(false);
+
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -46,25 +50,22 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    let filtered = allEvents;
-
-    if (searchParams.categories) {
-      const cats = (searchParams.categories as string).split(',');
+    let filtered = [...allEvents];
+  
+    const cats = (searchParams.categories as string)?.split(',') || [];
+    const isFree = searchParams.isFree === '1';
+  
+    if (cats.length > 0) {
       filtered = filtered.filter((e) => cats.includes(e.category));
     }
-
-    if (searchParams.isFree === '1') {
+  
+    if (isFree) {
       filtered = filtered.filter((e) => !e.is_premium);
     }
-
-    if (searchParams.popular === '1') {
-      filtered = [...filtered].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-    }
-
+  
     setFilteredEvents(filtered);
-  }, [searchParams]);
+  }, [allEvents, searchParams.categories, searchParams.isFree]);
+  
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -138,7 +139,7 @@ export default function Home() {
           </Text>
         </Pressable>
 
-        <Pressable onPress={() => router.push('/register')}>
+        <Pressable onPress={() => setFilterModalVisible(true)}>
           <Ionicons name="filter-outline" size={24} />
           <Text style={styles.filterText}>Filtres</Text>
         </Pressable>
@@ -168,6 +169,98 @@ export default function Home() {
               </Pressable>
             )}
           />
+        </View>
+      </Modal>
+
+      <Modal
+        isVisible={isFilterModalVisible}
+          onBackdropPress={() => setFilterModalVisible(false)}
+          style={styles.modal}
+        >
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Filtres</Text>
+
+          <Text style={{ fontWeight: 'bold', marginTop: 10 }}>Catégories</Text>
+          {Array.from(new Set(allEvents.map(e => e.category))).map((cat) => (
+            <Pressable
+              key={cat}
+              style={{
+                padding: 8,
+                borderBottomWidth: 1,
+                borderColor: '#eee',
+                backgroundColor: selectedCategories.includes(cat) ? '#ddd' : 'white',
+              }}
+              onPress={() => {
+                if (selectedCategories.includes(cat)) {
+                  setSelectedCategories(selectedCategories.filter(c => c !== cat));
+                } else {
+                  setSelectedCategories([...selectedCategories, cat]);
+                }
+              }}
+            >
+              <Text>{cat}</Text>
+            </Pressable>
+          ))}
+
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 20 }}>
+            <Pressable
+              onPress={() => setIsFreeOnly(true)}
+              style={{
+                flex: 1,
+                marginRight: 10,
+                padding: 10,
+                backgroundColor: isFreeOnly ? '#ddd' : '#f5f5f5',
+                alignItems: 'center',
+                borderRadius: 5,
+              }}
+            >
+              <Text>Gratuit</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => setIsFreeOnly(false)}
+              style={{
+                flex: 1,
+                marginLeft: 10,
+                padding: 10,
+                backgroundColor: !isFreeOnly ? '#ddd' : '#f5f5f5',
+                alignItems: 'center',
+                borderRadius: 5,
+              }}
+            >
+              <Text>Payant</Text>
+            </Pressable>
+          </View>
+
+
+          <Button
+            title="Appliquer les filtres"
+            onPress={() => {
+              const params: any = {};
+              if (selectedCategories.length > 0) {
+                params.categories = selectedCategories.join(',');
+              }
+              if (isFreeOnly) {
+                params.isFree = '1';
+              }
+
+              router.setParams(params); 
+              setFilterModalVisible(false);
+            }}
+          />
+          <Button
+            title="Réinitialiser les filtres"
+            color="red"
+            onPress={() => {
+              setSelectedCategories([]);
+              setIsFreeOnly(false);
+              setSelectedCity(null);
+              setSelectedDate(null);
+              router.setParams({}); // Réinitialise les query params
+              setFilterModalVisible(false);
+            }}
+          />
+
         </View>
       </Modal>
 
@@ -227,7 +320,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: '50%',
+    height: '75%',
   },
   modalTitle: {
     fontSize: 18,
