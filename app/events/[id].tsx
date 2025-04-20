@@ -18,6 +18,39 @@ export default function EventDetails() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [userDiamonds, setUserDiamonds] = useState(0);
+
+  useEffect(() => {
+    const fetchUserScore = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const uid = user?.id;
+      if (!uid) return;
+
+      const { data: participations } = await supabase
+        .from('user_events')
+        .select('*')
+        .eq('user_id', uid);
+
+      const { data: shares } = await supabase
+        .from('event_shares')
+        .select('*')
+        .eq('user_id', uid);
+
+      const { data: friends } = await supabase
+        .from('friends')
+        .select('*')
+        .or(`sender.eq.${uid},receiver.eq.${uid}`);
+
+      const score =
+        (participations?.length || 0) * 5 +
+        (shares?.length || 0) * 15 +
+        (friends?.length || 0) * 20;
+
+      setUserDiamonds(score);
+    };
+
+    fetchUserScore();
+  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -124,7 +157,11 @@ export default function EventDetails() {
       <Text style={styles.description}>{event.description}</Text>
 
       <View style={styles.buttonWrapper}>
-        <Button title="Je participe" onPress={handleParticipate} />
+        {event.is_premium && userDiamonds < 100 ? (
+          <Text style={{ color: 'red' }}>Tu as besoin de 100 diamants pour accéder à cet événement premium.</Text>
+        ) : (
+          <Button title="Je participe" onPress={handleParticipate} />
+        )}
         <Button title="Partager cet événement" onPress={handleShareEvent} />
       </View>
 
