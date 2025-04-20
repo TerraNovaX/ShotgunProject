@@ -1,6 +1,7 @@
-import { View, Text, StyleSheet, Button, Modal, Linking } from "react-native";
+import { View, Text, StyleSheet, Button, Modal, TouchableOpacity } from "react-native";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useRouter } from "expo-router";
 
 export default function Profile() {
   const [userData, setUserData] = useState<any>(null);
@@ -9,21 +10,14 @@ export default function Profile() {
   const [friends, setFriends] = useState(0);
   const [score, setScore] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const router = useRouter();
 
   const handleShareProfile = () => {
-    const userName = userData?.name; 
-    const profileLink = `https://monapp.com/profil/${userName}`; 
-
     setModalVisible(true);
   };
-
-  const handleShareEvent = () => {
-    setModalVisible(true);
-  };
-  
 
   const handleLinkClick = async () => {
-    const newScore = score + 20; 
+    const newScore = score + 20;
     setScore(newScore);
     setShares(friends + 1);
     alert("Merci d'avoir cliqué sur le lien !");
@@ -38,7 +32,6 @@ export default function Profile() {
           .select('name,id')
           .eq('id', user.id)
           .single();
-        console.log(profile); 
 
         const { data: participationsData } = await supabase
           .from('event_participants')
@@ -70,25 +63,42 @@ export default function Profile() {
     fetchUserInfo();
   }, []);
 
+  const getInitialColor = () => {
+    const colors = ["#FF6B6B", "#6BCB77", "#4D96FF", "#FFD93D", "#A66DD4"];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <Text style={styles.backText}>← Retour</Text>
+      </TouchableOpacity>
+
       {userData ? (
         <>
-          <Text style={styles.title}>Profil</Text>
-          <Text style={styles.info}>👤 {userData.name}</Text>
-          <Text style={styles.info}>📧 {userData.email}</Text>
-          <Text style={styles.info}>🎟️ Événements participés : {participations}</Text>
-          <Text style={styles.info}>👥 Amis ajoutés : {friends}</Text>
-          <Text style={styles.info}>🔗 Événements partagés : {shares}</Text>
-          <Text style={styles.score}>💎 Score : {score}</Text>
-          {score >= 100 ? (
-            <Text style={styles.access}>🔓 Accès aux événements premium débloqué !</Text>
-          ) : (
-            <Text style={styles.locked}>
-              🔒 {100 - score} Diamants avant l'accès aux événements premium
-            </Text>
-          )}
-          <Button title="Ajouter un ami" onPress={handleShareProfile} />
+          <View style={styles.avatarContainer}>
+            <View style={[styles.avatar, { backgroundColor: getInitialColor() }]}>
+              <Text style={styles.avatarText}>{userData.name?.charAt(0).toUpperCase()}</Text>
+            </View>
+            <Text style={styles.userName}>{userData.name}</Text>
+          </View>
+
+          <View style={styles.infoBox}>
+            <Text style={styles.info}>Email : {userData.email}</Text>
+            <Text style={styles.info}>Événements participés : {participations}</Text>
+            <Text style={styles.info}>Amis ajoutés : {friends}</Text>
+            <Text style={styles.info}>Événements partagés : {shares}</Text>
+            <Text style={styles.score}>Score : {score}</Text>
+
+            {score >= 100 ? (
+              <Text style={styles.access}>Accès premium débloqué</Text>
+            ) : (
+              <Text style={styles.locked}>
+                Encore {100 - score} points pour débloquer le premium
+              </Text>
+            )}
+            <Button title="Partager mon profil" onPress={handleShareProfile} />
+          </View>
         </>
       ) : (
         <Text>Chargement...</Text>
@@ -106,10 +116,7 @@ export default function Profile() {
             <Text style={styles.link}>
               https://monapp.com/profil/{userData?.id}
             </Text>
-            <Button
-              title="Cliquez ici pour simuler le clic"
-              onPress={handleLinkClick}
-            />
+            <Button title="Simuler un clic" onPress={handleLinkClick} />
             <Button title="Fermer" onPress={() => setModalVisible(false)} />
           </View>
         </View>
@@ -119,12 +126,66 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
-  info: { fontSize: 16, marginBottom: 5 },
-  score: { fontSize: 16, marginBottom: 5 },
-  access: { fontSize: 16, color: "green" },
-  locked: { fontSize: 16, color: "red" },
+  container: { flex: 1, padding: 20, alignItems: "center", backgroundColor: "#fff" },
+  backButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+    zIndex: 10,
+  },
+  backText: {
+    fontSize: 16,
+    color: "#007AFF",
+  },
+  avatarContainer: {
+    alignItems: "center",
+    marginTop: 80,
+    marginBottom: 20,
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  avatarText: {
+    fontSize: 40,
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  userName: {
+    fontSize: 22,
+    fontWeight: "600",
+  },
+  infoBox: {
+    width: "100%",
+    marginTop: 20,
+  },
+  info: {
+    fontSize: 16,
+    marginBottom: 5,
+    textAlign: "center",
+  },
+  score: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginVertical: 10,
+    textAlign: "center",
+  },
+  access: {
+    fontSize: 16,
+    color: "green",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  locked: {
+    fontSize: 16,
+    color: "red",
+    textAlign: "center",
+    marginBottom: 10,
+  },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -136,6 +197,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "white",
     borderRadius: 10,
+    alignItems: "center",
   },
   link: { color: "blue", marginBottom: 10 },
 });

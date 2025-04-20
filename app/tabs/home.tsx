@@ -8,9 +8,7 @@ import { format, isToday, isTomorrow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import { supabase } from '@/lib/supabase';
 
-
-
-const cities = ['Paris', 'Marseille', 'Lyon', 'Versailles', 'Toulouse', 'Nice', 'Bordeaux', 'Lille', 'Strasbourg', 'Nantes'];
+const cities = ['Paris', 'Marseille', 'Lyon', 'Nanterre', 'Toulouse', 'Nice', 'Bordeaux', 'Lille', 'Strasbourg', 'Nantes'];
 
 export default function Home() {
   const router = useRouter();
@@ -28,6 +26,13 @@ export default function Home() {
   const [isFilterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isFreeOnly, setIsFreeOnly] = useState<boolean>(false);
+  const params: any = {};
+  if (isFreeOnly) {
+    params.isFree = '1';
+  } else {
+    params.isFree = '0';
+  }
+  
 
 
   useEffect(() => {
@@ -52,16 +57,24 @@ export default function Home() {
   useEffect(() => {
     let filtered = [...allEvents];
   
-    const cats = (searchParams.categories as string)?.split(',') || [];
-    const isFree = searchParams.isFree === '1';
-  
+    const cats = (searchParams.categories as string)?.split(',') || [];  
     if (cats.length > 0) {
       filtered = filtered.filter((e) => cats.includes(e.category));
     }
   
+    const isFree = searchParams.isFree === '1';
+
     if (isFree) {
       filtered = filtered.filter((e) => !e.is_premium);
+    } else {
+      filtered = filtered.filter((e) => e.is_premium);
     }
+
+    if (searchParams.isFree) {
+      const isFree = searchParams.isFree === '1';
+      filtered = filtered.filter((e) => isFree ? !e.is_premium : e.is_premium);
+    }
+    
   
     setFilteredEvents(filtered);
   }, [allEvents, searchParams.categories, searchParams.isFree]);
@@ -120,8 +133,6 @@ export default function Home() {
   
     return Object.values(groups).sort((a, b) => a.date.getTime() - b.date.getTime());
   };
-  
-  
   const eventsGrouped = groupEventsByDate();
 
   return (
@@ -256,7 +267,7 @@ export default function Home() {
               setIsFreeOnly(false);
               setSelectedCity(null);
               setSelectedDate(null);
-              router.setParams({}); // Réinitialise les query params
+              router.setParams({});
               setFilterModalVisible(false);
             }}
           />
