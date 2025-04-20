@@ -32,7 +32,6 @@ export default function MyEvents() {
     fetchUserAndEvents();
   }, []);
 
-  // Séparer les événements passés et à venir
   const today = new Date();
   const upcomingEvents = events.filter((event) => new Date(event.date) >= today);
   const pastEvents = events.filter((event) => new Date(event.date) < today);
@@ -55,7 +54,6 @@ export default function MyEvents() {
 
   return (
     <View style={styles.container}>
-      {/* Événements à venir */}
       {upcomingEvents.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Événements à venir</Text>
@@ -82,7 +80,6 @@ export default function MyEvents() {
         </View>
       )}
 
-      {/* Événements passés */}
       {pastEvents.length > 0 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Événements passés</Text>
