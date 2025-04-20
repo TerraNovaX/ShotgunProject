@@ -1,31 +1,65 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  Alert,
-  ActivityIndicator,
-} from "react-native";
+import {  View,  Text,  StyleSheet,  Button,  Alert,  ActivityIndicator, Modal, Pressable} from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { fetchEventById } from "../../api/fetchEventById";
 import { Event } from "@/type/event";
 import MapView, { Marker } from "react-native-maps";
 import { participateToEvent } from "@/api/participateToEvent";
+import { supabase } from "@/lib/supabase";
+
 
 export default function EventDetails() {
   const { id } = useLocalSearchParams();
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [score, setScore] = useState<number>(0);
+  const [shares, setShares] = useState<number>(0);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+
   useEffect(() => {
-    if (typeof id === "string") {
-      fetchEventById(id).then((e) => {
-        setEvent(e);
-        setLoading(false);
-      });
-    }
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+      }
+    };
+    fetchUser();
+  }, []);
+    useEffect(() => {
+      if (typeof id === "string") {
+        fetchEventById(id).then((e) => {
+          setEvent(e);
+          setLoading(false);
+        });
+      }
   }, [id]);
+
+  const handleShareEvent = () => {
+    setModalVisible(true);
+  };
+
+  const handleLinkClick = async () => {
+    const newScore = score + 15;
+    const newShares = shares + 1;
+  
+    setScore(newScore);
+    setShares(newShares);
+    setModalVisible(false);
+    Alert.alert("Merci !", `Ton score est maintenant de ${newScore}`);
+  
+    if (userId && event?.id) {
+      await supabase.from("event_shares").insert([
+        {
+          user_id: userId,
+          event_id: event.id,
+        },
+      ]);
+    }
+  }; 
+
 
   const handleParticipate = () => {
     Alert.alert(
@@ -91,7 +125,30 @@ export default function EventDetails() {
 
       <View style={styles.buttonWrapper}>
         <Button title="Je participe" onPress={handleParticipate} />
+        <Button title="Partager cet événement" onPress={handleShareEvent} />
       </View>
+
+      <Modal
+        transparent={true}
+        visible={modalVisible}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text>Voici ton lien de partage :</Text>
+            <Text style={styles.link}>
+              https://monapp.com/event/{event?.id}
+            </Text>
+            <Button
+              title="Clique ici pour simuler un clic"
+              onPress={handleLinkClick}
+            />
+            <Button title="Fermer" onPress={() => setModalVisible(false)} />
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 }
@@ -102,4 +159,22 @@ const styles = StyleSheet.create({
   info: { fontSize: 16, marginBottom: 5 },
   description: { fontSize: 16, marginTop: 10, marginBottom: 20 },
   buttonWrapper: { marginTop: 20 },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  link: {
+    color: 'blue',
+    marginVertical: 10,
+    textAlign: 'center',
+  },
+  
 });
