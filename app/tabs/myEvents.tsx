@@ -75,7 +75,7 @@ export default function MyEvents() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
+  container: { display: "flex", flexDirection: "column", padding: 20 },
   eventCard: {
     marginBottom: 15,
     padding: 15,
