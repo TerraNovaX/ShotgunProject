@@ -228,7 +228,7 @@ export default function Home() {
                 borderRadius: 5,
               }}
             >
-              <Text>Payant</Text>
+              <Text>Premium</Text>
             </Pressable>
           </View>
 
