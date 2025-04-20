@@ -1,7 +1,6 @@
-// app/allevents.tsx
 import { View, Text, FlatList, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
-import { allEvents } from '../lib/data'; // ← Importation des événements depuis lib
+import { allEvents } from '../lib/data'; 
 
 export default function AllEventsScreen() {
   const router = useRouter();

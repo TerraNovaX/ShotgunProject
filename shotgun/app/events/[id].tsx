@@ -17,7 +17,7 @@ export default function EventDetails() {
   }
 
   const handleParticipate = () => {
-    Alert.alert('Participation enregistrée', `Tu participes à "${event.title}" !`);
+    Alert.alert('Participation enregistrée', `Tu participes à ${event.title} !`);
   };
 
   return (

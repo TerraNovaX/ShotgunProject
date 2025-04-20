@@ -31,7 +31,7 @@ export default function Layout() {
             home: 'home',
             maps: 'map',
             search: 'search',
-            myEvents: 'calendar',
+            myEvents: 'tickets',
           };
           return (
             <Ionicons name={icons[route.name] || 'help'} size={size} color={color} />
@@ -39,10 +39,11 @@ export default function Layout() {
         },
       })}
     >
-      <Tabs.Screen name="Home" />
-      <Tabs.Screen name="Maps" />
-      <Tabs.Screen name="Search" />
-      <Tabs.Screen name="My Events" />
+    <Tabs.Screen name="home" />
+    <Tabs.Screen name="maps" />
+    <Tabs.Screen name="search" />
+    <Tabs.Screen name="myEvents" />
+
     </Tabs>
   );
 }

@@ -1,20 +1,36 @@
-import { View, TextInput, StyleSheet, FlatList, Text } from 'react-native';
+import { View, TextInput, StyleSheet, FlatList, Text, Pressable } from 'react-native';
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
+import { allEvents } from 'lib/data';
 
 export default function Search() {
   const [query, setQuery] = useState('');
-  const results = [
-    { id: '1', title: 'Festival gratuit' },
-    { id: '2', title: 'Soirée rooftop' },
-  ];
+  const router = useRouter();
+
+  const filtered = allEvents.filter(e =>
+    e.title.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
     <View style={styles.container}>
-      <TextInput style={styles.input} placeholder="Rechercher..." onChangeText={setQuery} />
+      <TextInput
+        style={styles.input}
+        placeholder="Rechercher un événement..."
+        onChangeText={setQuery}
+        value={query}
+      />
       <FlatList
-        data={results.filter(e => e.title.toLowerCase().includes(query.toLowerCase()))}
+        data={filtered}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Text style={styles.item}>{item.title}</Text>}
+        renderItem={({ item }) => (
+          <Pressable
+            style={styles.item}
+            onPress={() => router.push(`/events/${item.id}`)}
+          >
+            <Text>{item.title}</Text>
+          </Pressable>
+        )}
+        ListEmptyComponent={<Text>Aucun événement trouvé.</Text>}
       />
     </View>
   );
