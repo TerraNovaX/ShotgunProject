@@ -1,4 +1,4 @@
-// lib/fetchMyEvents.ts
+
 import { supabase } from "../lib/supabase";
 import { Event } from "../type/event";
 

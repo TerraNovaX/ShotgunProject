@@ -1,4 +1,3 @@
-// app/events/[id].tsx
 import {
   View,
   Text,

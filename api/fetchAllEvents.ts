@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase'; // ← Assure-toi que tu l’as bien configuré
+import { supabase } from '../lib/supabase'; 
 import { Event } from '../type/event';
 
 export async function fetchAllEvents(): Promise<Event[]> {
