@@ -62,22 +62,17 @@ export default function Home() {
       filtered = filtered.filter((e) => cats.includes(e.category));
     }
   
-    const isFree = searchParams.isFree === '1';
-
+    const isFree = searchParams.isFree === '1';  
+  
     if (isFree) {
       filtered = filtered.filter((e) => !e.is_premium);
     } else {
       filtered = filtered.filter((e) => e.is_premium);
     }
-
-    if (searchParams.isFree) {
-      const isFree = searchParams.isFree === '1';
-      filtered = filtered.filter((e) => isFree ? !e.is_premium : e.is_premium);
-    }
-    
   
     setFilteredEvents(filtered);
   }, [allEvents, searchParams.categories, searchParams.isFree]);
+  
   
 
   useEffect(() => {
