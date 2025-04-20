@@ -39,10 +39,10 @@ export default function Layout() {
         },
       })}
     >
-      <Tabs.Screen name="Home" />
-      <Tabs.Screen name="Maps" />
-      <Tabs.Screen name="Search" />
-      <Tabs.Screen name="My Events" />
+      <Tabs.Screen name="home" />
+      <Tabs.Screen name="maps" />
+      <Tabs.Screen name="search" />
+      <Tabs.Screen name="myEvents" />
     </Tabs>
   );
 }
