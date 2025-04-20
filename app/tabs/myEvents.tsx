@@ -1,15 +1,16 @@
-// app/tabs/myEvents.tsx
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { fetchMyEvents } from "@/api/fetchMyEvent";
 import { Event } from "@/type/event";
 import { supabase } from "@/lib/supabase";
+import { cancelParticipation } from "@/api/cancelParticipation";
 
 export default function MyEvents() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -59,6 +60,13 @@ export default function MyEvents() {
               Date: {new Date(item.date).toLocaleDateString()}
             </Text>
             <Text style={styles.info}>Lieu: {item.location.city}</Text>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                cancelParticipation(item.id, item.title, setEvents);
+              }}>
+              <Text style={styles.buttonText}>Annuler ma participation</Text>
+            </TouchableOpacity>
           </View>
         )}
       />
@@ -76,4 +84,12 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 18, fontWeight: "bold" },
   info: { fontSize: 14 },
+  button: {
+    marginTop: 10,
+    backgroundColor: "#ff4d4d",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonText: { color: "#fff", fontWeight: "bold" },
 });
